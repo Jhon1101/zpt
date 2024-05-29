@@ -1,0 +1,56 @@
+[
+    {
+        "identificacion": "1088234567",
+        "nombres": "JHON",
+        "apellidos": "GONZALEZ",
+        "email": "golo@gmail.com",
+        "direccion": "calle 1 sur",
+        "telefono": "3161570663",
+        "password": "123456"
+    },
+    {
+        "identificacion": "12345678",
+        "nombres": "olga",
+        "apellidos": "cano",
+        "email": "olganol@gmail.com",
+        "direccion": "dosque 45",
+        "telefono": "45678901",
+        "password": "abcd1234"
+    },
+    {
+        "identificacion": "",
+        "nombres": "LOPZ",
+        "apellidos": "GONZALEZ",
+        "email": "ala@gmail.com",
+        "direccion": "calle b f  sur",
+        "telefono": "1234501",
+        "password": "1234qwer"
+    },
+    {
+        "identificacion": "10882345",
+        "nombres": "felipe",
+        "apellidos": "hernandez",
+        "email": "jhnk@gmail.com",
+        "direccion": "calle 24",
+        "telefono": "3108997193",
+        "password": "12345678"
+    },
+    {
+        "identificacion": "1234567",
+        "nombres": "asddf",
+        "apellidos": "adff",
+        "email": "jhnweek@gmail.com",
+        "direccion": "calle 24 dff",
+        "telefono": "12456",
+        "password": "asdfghj"
+    },
+    {
+        "identificacion": "456688d",
+        "nombres": "juan pablo",
+        "apellidos": "salazar roja",
+        "email": "fgggf6@hotmail.com",
+        "direccion": "barrio roma 15020",
+        "telefono": "95241355",
+        "password": "123456789"
+    }
+]
