@@ -40,15 +40,15 @@ const userController = {
         try {
             const { email, password } = req.body;
 
-            // Aquí deberías verificar las credenciales del usuario en tu base de datos u otro almacenamiento seguro
-            // Por ahora, simularemos que encontramos el usuario
-            const usuario = {
-                email: 'usuario@example.com',
-                password: 'contraseña'
-            };
+            // Leer el archivo JSON una sola vez
+            const usuariosRegistradosData = await fs.readFile(usuariosRegistradosFilePath, 'utf-8');
+            let usuariosRegistrados = JSON.parse(usuariosRegistradosData);
+
+            // Buscar el usuario en la lista de usuarios registrados
+            const usuario = usuariosRegistrados.find(user => user.email === email && user.password === password);
 
             // Verifica las credenciales
-            if (email === usuario.email && password === usuario.password) {
+            if (usuario) {
                 // Si las credenciales son correctas, devuelve los datos del usuario en formato JSON
                 res.status(200).json(usuario);
             } else {
