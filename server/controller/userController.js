@@ -1,35 +1,59 @@
-const fs = require('fs').promises;
-const path = require('path');
-
-const usuariosRegistradosFilePath = path.join(__dirname, '../../src/componentes/usuariosRegistrados.json');
+const axios = require('axios');
 
 const userController = {
     guardarUsuario: async function (req, res) {
+        const config = {
+            method: "GET",
+            maxBodyLength: Infinity,
+            url: 'https://api.jsonbin.io/v3/b/665798dbacd3cb34a84fb7ec',
+            headers: {
+                'Content-Type': 'application/json',
+                "X-Master-Key": "$2a$10$oLeM1xVUsAeQwpsBrvJeY.KONldUcqx6VGgyVDBmuPCOiui1qapAK"
+            }
+        };
+
         try {
-            // Recibir los datos del usuario desde el cuerpo de la solicitud
+            const result = await axios(config);
+            let usuariosRegistrados = result.data.record;
+
             const { identificacion, nombres, apellidos, email, direccion, telefono, password } = req.body;
 
-            // Leer el archivo JSON una sola vez
-            const usuariosRegistradosData = await fs.readFile(usuariosRegistradosFilePath, 'utf-8');
-            let usuariosRegistrados = JSON.parse(usuariosRegistradosData);
+            const usuarioExistente = usuariosRegistrados.find(user => user.email === email);
+            if (usuarioExistente) {
+                return res.status(400).send("Usuario ya existe en la Base de Datos");
+            }
 
-            // Validar los datos del usuario (puedes implementar tus propias reglas de validación aquí)
-
-            // Agregar el nuevo usuario al arreglo de usuarios registrados
-            usuariosRegistrados.push({
+            const nuevoUsuario = {
+                id: usuariosRegistrados.length + 1,
                 identificacion,
                 nombres,
                 apellidos,
                 email,
                 direccion,
                 telefono,
-                password
-            });
+                password,
+                fecha_creacion: new Date().toISOString()
+            };
 
-            // Escribir el archivo JSON actualizado
-            await fs.writeFile(usuariosRegistradosFilePath, JSON.stringify(usuariosRegistrados, null, 4));
+            usuariosRegistrados.push(nuevoUsuario);
 
-            res.status(200).send('Usuario registrado con éxito');
+            const putConfig = {
+                method: "PUT",
+                url: 'https://api.jsonbin.io/v3/b/665798dbacd3cb34a84fb7ec',
+                headers: {
+                    'Content-Type': 'application/json',
+                    "X-Master-Key": "$2a$10$oLeM1xVUsAeQwpsBrvJeY.KONldUcqx6VGgyVDBmuPCOiui1qapAK"
+                },
+                data: { record: usuariosRegistrados }
+            };
+
+            const putResult = await axios(putConfig);
+
+            if (putResult.status === 200) {
+                res.status(200).send('Usuario registrado con éxito');
+            } else {
+                res.status(500).send('Error al guardar el usuario');
+            }
         } catch (error) {
             console.error('Error al procesar el registro de usuario:', error);
             res.status(500).send('Error interno del servidor');
@@ -37,22 +61,26 @@ const userController = {
     },
 
     iniciarSesion: async function (req, res) {
+        const config = {
+            method: "GET",
+            maxBodyLength: Infinity,
+            url: 'https://api.jsonbin.io/v3/b/665798dbacd3cb34a84fb7ec',
+            headers: {
+                'Content-Type': 'application/json',
+                "X-Master-Key": "$2a$10$oLeM1xVUsAeQwpsBrvJeY.KONldUcqx6VGgyVDBmuPCOiui1qapAK"
+            }
+        };
+
         try {
+            const result = await axios(config);
+            const usuariosRegistrados = result.data.record;
             const { email, password } = req.body;
 
-            // Leer el archivo JSON una sola vez
-            const usuariosRegistradosData = await fs.readFile(usuariosRegistradosFilePath, 'utf-8');
-            let usuariosRegistrados = JSON.parse(usuariosRegistradosData);
-
-            // Buscar el usuario en la lista de usuarios registrados
             const usuario = usuariosRegistrados.find(user => user.email === email && user.password === password);
 
-            // Verifica las credenciales
             if (usuario) {
-                // Si las credenciales son correctas, devuelve los datos del usuario en formato JSON
                 res.status(200).json(usuario);
             } else {
-                // Si las credenciales son incorrectas, devuelve un mensaje de error
                 res.status(401).json({ error: 'Credenciales incorrectas' });
             }
         } catch (error) {
