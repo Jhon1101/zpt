@@ -40,7 +40,7 @@ app.get("/", (req, res) => {
         })
         .catch(error => {
             console.error(error);
-            res.status(500).send('Ocurrió un error');
+            res.status(500).send('');
         });
 });
 
