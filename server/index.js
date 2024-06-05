@@ -10,10 +10,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
 
-// Ruta para guardar un usuario
 app.post('/guardar-usuario', userController.guardarUsuario);
-
-// Ruta para iniciar sesión
 app.post('/iniciar-sesion', userController.iniciarSesion);
 
 app.get("/", (req, res) => {

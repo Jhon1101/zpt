@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BsPersonFill, BsEnvelopeFill, BsLockFill } from 'react-icons/bs'; // Importar iconos de Bootstrap Icons
+import { BsPersonFill, BsEnvelopeFill, BsLockFill } from 'react-icons/bs';
 import '../App.css';
 
 const Registro = () => {
@@ -24,8 +24,7 @@ const Registro = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    // Verificar que las contraseñas coincidan
+
     if (usuario.password !== usuario.confirmarPassword) {
       alert('Las contraseñas no coinciden. Por favor, inténtalo de nuevo.');
       return;
