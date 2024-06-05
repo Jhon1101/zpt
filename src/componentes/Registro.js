@@ -24,14 +24,14 @@ const Registro = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
+  
     if (usuario.password !== usuario.confirmarPassword) {
       alert('Las contraseñas no coinciden. Por favor, inténtalo de nuevo.');
       return;
     }
-
+  
     const usuarioJSON = JSON.stringify(usuario);
-
+  
     fetch('http://localhost:3001/guardar-usuario', {
       method: 'POST',
       headers: {
@@ -51,7 +51,7 @@ const Registro = () => {
       console.error('Error al guardar el registro:', error);
       alert('Error al registrar. Por favor, inténtalo de nuevo.');
     });
-  };
+  };  
 
   return (
     <div className="registro-container">

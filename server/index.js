@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const userController = require('./controller/userController'); // Asegúrate de que la ruta sea correcta
+const userController = require('./controller/userController');
 
 const app = express();
 const PORT = 3001;
@@ -34,7 +34,6 @@ app.get("/", (req, res) => {
         });
 });
 
-// Iniciar el servidor
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
