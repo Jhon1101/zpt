@@ -1,4 +1,8 @@
 const axios = require('axios');
+const express = require("express");
+const app = express();
+const cors = require("cors");
+app.use(cors())
 
 const userController = {
     guardarUsuario: async function (req, res) {
@@ -14,7 +18,15 @@ const userController = {
 
         try {
             const result = await axios(config);
-            let usuarios = result.data.record;
+            const usuarios = result.data.record;
+
+            // Verificar si el usuario ya existe
+            const existeUsuario = usuarios.some(user => user.email === req.body.email);
+            if (existeUsuario) {
+                return res.status(400).send("Usuario ya existe en la Base de Datos");
+            }
+
+            // Crear nuevo usuario
             const nuevoUsuario = {
                 id: usuarios.length + 1,
                 identificacion: req.body.identificacion,
@@ -26,15 +38,10 @@ const userController = {
                 password: req.body.password
             };
 
-            const existeUsuario = usuarios.some(user => user.email === req.body.email);
-
-            if (existeUsuario) {
-                res.status(400).send("Usuario ya existe en la Base de Datos");
-                return;
-            }
-
+            // Agregar nuevo usuario a la lista
             usuarios.push(nuevoUsuario);
 
+            // Configuración para la solicitud PUT
             const configPut = {
                 method: "PUT",
                 url: 'https://api.jsonbin.io/v3/b/665798dbacd3cb34a84fb7ec',
@@ -42,19 +49,19 @@ const userController = {
                     'Content-Type': 'application/json',
                     "X-Master-Key": "$2a$10$oLeM1xVUsAeQwpsBrvJeY.KONldUcqx6VGgyVDBmuPCOiui1qapAK"
                 },
-                data: { record: usuarios },
+                data: { record: usuarios }
             };
 
+            // Realizar solicitud PUT
             const response = await axios(configPut);
-
             if (response.status === 200) {
-                res.status(200).send('Usuario registrado con éxito');
+                return res.status(200).send('Usuario registrado con éxito');
             } else {
-                res.status(400).send("No se pudo registrar el usuario");
+                return res.status(400).send("No se pudo registrar el usuario");
             }
         } catch (error) {
             console.error('Error al procesar el registro de usuario:', error);
-            res.status(500).send('Error interno del servidor');
+            return res.status(500).send('Error interno del servidor');
         }
     },
 
@@ -73,15 +80,16 @@ const userController = {
             const result = await axios(config);
             const usuarios = result.data.record;
 
+            // Buscar usuario con las credenciales proporcionadas
             const usuario = usuarios.find(user => user.email === req.body.email && user.password === req.body.password);
             if (usuario) {
-                res.status(200).send("Inicio de sesión exitoso");
+                return res.status(200).send("Inicio de sesión exitoso");
             } else {
-                res.status(400).send('Credenciales incorrectas');
+                return res.status(400).send('Credenciales incorrectas');
             }
         } catch (error) {
             console.error('Error al iniciar sesión:', error);
-            res.status(500).send('Error interno del servidor');
+            return res.status(500).send('Error interno del servidor');
         }
     }
 };
