@@ -1,9 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const path = require('path');
-const axios = require('axios'); // Importar Axios
-const userController = require('./controller/userController'); // Asegúrate de tener este archivo y el método necesario
+const axios = require('axios');
+const userController = require('./controller/userController');
 
 const app = express();
 const PORT = 3001;
@@ -17,10 +16,6 @@ app.post('/guardar-usuario', userController.guardarUsuario);
 
 // Ruta para iniciar sesión
 app.post('/iniciar-sesion', userController.iniciarSesion);
-
-// app.get('/usuariosRegistrados.json', (req, res) => {
-//     res.sendFile(path.join(__dirname, 'src', 'componentes', 'usuariosRegistrados.json'));
-// });
 
 app.get("/", (req, res) => {
     const config = {
@@ -36,7 +31,6 @@ app.get("/", (req, res) => {
     axios(config)
         .then(result => {
             res.send(result.data.record);
-            // Si `result.data.record` no es correcto, puedes enviar solo `result.data` o ajustar según la estructura del JSON recibido.
         })
         .catch(error => {
             console.error(error);

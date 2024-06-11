@@ -1,63 +1,56 @@
-const express = require("express");
-const app = express();
 const axios = require('axios');
-const cors = require("cors");
-app.use(cors());
-
-const apiConfig = {
-    url: 'https://api.jsonbin.io/v3/b/665798dbacd3cb34a84fb7ec',
-    headers: {
-        'Content-Type': 'application/json',
-        "X-Master-Key": "$2a$10$oLeM1xVUsAeQwpsBrvJeY.KONldUcqx6VGgyVDBmuPCOiui1qapAK"
-    }
-};
 
 const userController = {
     guardarUsuario: async function (req, res) {
+        const config = {
+            method: "GET",
+            maxBodyLength: Infinity,
+            url: 'https://api.jsonbin.io/v3/b/665798dbacd3cb34a84fb7ec',
+            headers: {
+                'Content-Type': 'application/json',
+                "X-Master-Key": "$2a$10$oLeM1xVUsAeQwpsBrvJeY.KONldUcqx6VGgyVDBmuPCOiui1qapAK"
+            }
+        };
+
         try {
-            const { identificacion, nombres, apellidos, email, direccion, telefono, fechaNacimiento, deptoResidencia, municipioResidencia, password } = req.body;
+            const result = await axios(config);
+            let usuarios = result.data.record;
+            const nuevoUsuario = {
+                id: usuarios.length + 1,
+                identificacion: req.body.identificacion,
+                nombres: req.body.nombres,
+                apellidos: req.body.apellidos,
+                email: req.body.email,
+                direccion: req.body.direccion,
+                telefono: req.body.telefono,
+                password: req.body.password
+            };
 
-            // Obtener los usuarios registrados desde la API
-            const getConfig = { ...apiConfig, method: 'GET' };
-            const result = await axios(getConfig);
-            let usuariosRegistrados = result.data.record;
+            const existeUsuario = usuarios.some(user => user.email === req.body.email);
 
-            // Verificar si el usuario ya está registrado
-            if (usuariosRegistrados.some(user => user.email === email)) {
-                return res.status(400).send('Usuario ya existe en la Base de Datos');
+            if (existeUsuario) {
+                res.status(400).send("Usuario ya existe en la Base de Datos");
+                return;
             }
 
-            // Agregar el nuevo usuario al arreglo de usuarios registrados
-            const usuarioNuevo = {
-                id: usuariosRegistrados.length + 1,
-                identificacion,
-                nombres,
-                apellidos,
-                email,
-                direccion,
-                telefono,
-                fechaNacimiento,
-                deptoResidencia,
-                municipioResidencia,
-                password,
-                estado: "activo",
-                rol: "Usuario",
-                fecha_creación: new Date(),
-            };
-            usuariosRegistrados.push(usuarioNuevo);
+            usuarios.push(nuevoUsuario);
 
-            // Actualizar los usuarios registrados en la API
-            const putConfig = {
-                ...apiConfig,
-                method: 'PUT',
-                data: JSON.stringify({ record: usuariosRegistrados })
+            const configPut = {
+                method: "PUT",
+                url: 'https://api.jsonbin.io/v3/b/665798dbacd3cb34a84fb7ec',
+                headers: {
+                    'Content-Type': 'application/json',
+                    "X-Master-Key": "$2a$10$oLeM1xVUsAeQwpsBrvJeY.KONldUcqx6VGgyVDBmuPCOiui1qapAK"
+                },
+                data: { record: usuarios },
             };
-            const updateResponse = await axios(putConfig);
 
-            if (updateResponse.status === 200) {
+            const response = await axios(configPut);
+
+            if (response.status === 200) {
                 res.status(200).send('Usuario registrado con éxito');
             } else {
-                res.status(400).send('Error al registrar el usuario');
+                res.status(400).send("No se pudo registrar el usuario");
             }
         } catch (error) {
             console.error('Error al procesar el registro de usuario:', error);
@@ -66,25 +59,29 @@ const userController = {
     },
 
     iniciarSesion: async function (req, res) {
+        const config = {
+            method: "GET",
+            maxBodyLength: Infinity,
+            url: 'https://api.jsonbin.io/v3/b/665798dbacd3cb34a84fb7ec',
+            headers: {
+                'Content-Type': 'application/json',
+                "X-Master-Key": "$2a$10$oLeM1xVUsAeQwpsBrvJeY.KONldUcqx6VGgyVDBmuPCOiui1qapAK"
+            }
+        };
+
         try {
-            const { email, password } = req.body;
+            const result = await axios(config);
+            const usuarios = result.data.record;
 
-            // Obtener los usuarios registrados desde la API
-            const getConfig = { ...apiConfig, method: 'GET' };
-            const result = await axios(getConfig);
-            const usuariosRegistrados = result.data.record;
-
-            // Buscar el usuario en la lista de usuarios registrados
-            const usuario = usuariosRegistrados.find(user => user.email === email && user.password === password);
-
+            const usuario = usuarios.find(user => user.email === req.body.email && user.password === req.body.password);
             if (usuario) {
-                res.status(200).json(usuario);
+                res.status(200).send("Inicio de sesión exitoso");
             } else {
-                res.status(401).json({ error: 'Credenciales incorrectas' });
+                res.status(400).send('Credenciales incorrectas');
             }
         } catch (error) {
             console.error('Error al iniciar sesión:', error);
-            res.status(500).json({ error: 'Error interno del servidor' });
+            res.status(500).send('Error interno del servidor');
         }
     }
 };
