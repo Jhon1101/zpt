@@ -1,34 +1,20 @@
-const express = require('express');
-const cors = require('cors');
 const axios = require('axios');
-
-const app = express();
-app.use(cors());
-app.use(express.json());
 
 const userController = {
     guardarUsuario: async function (req, res) {
         const config = {
             method: "GET",
             maxBodyLength: Infinity,
-            url: 'https://api.jsonbin.io/v3/b/665798dbacd3cb34a84fb7ec',
+            url: process.env.JSONBIN_URL,
             headers: {
                 'Content-Type': 'application/json',
-                "X-Master-Key": "$2a$10$oLeM1xVUsAeQwpsBrvJeY.KONldUcqx6VGgyVDBmuPCOiui1qapAK"
+                "X-Master-Key": process.env.MASTER_KEY
             }
         };
 
         try {
             const result = await axios(config);
-            const usuarios = result.data.record;
-
-            // Verificar si el usuario ya existe
-            const existeUsuario = usuarios.some(user => user.email === req.body.email);
-            if (existeUsuario) {
-                return res.status(400).send("Usuario ya existe en la Base de Datos");
-            }
-
-            // Crear nuevo usuario
+            let usuarios = result.data.record;
             const nuevoUsuario = {
                 id: usuarios.length + 1,
                 identificacion: req.body.identificacion,
@@ -40,30 +26,35 @@ const userController = {
                 password: req.body.password
             };
 
-            // Agregar nuevo usuario a la lista
+            const existeUsuario = usuarios.some(user => user.email === req.body.email);
+
+            if (existeUsuario) {
+                res.status(400).send("Usuario ya existe en la Base de Datos");
+                return;
+            }
+
             usuarios.push(nuevoUsuario);
 
-            // Configuración para la solicitud PUT
             const configPut = {
                 method: "PUT",
-                url: 'https://api.jsonbin.io/v3/b/665798dbacd3cb34a84fb7ec',
+                url: process.env.JSONBIN_URL,
                 headers: {
                     'Content-Type': 'application/json',
-                    "X-Master-Key": "$2a$10$oLeM1xVUsAeQwpsBrvJeY.KONldUcqx6VGgyVDBmuPCOiui1qapAK"
+                    "X-Master-Key": process.env.MASTER_KEY
                 },
-                data: { record: usuarios }
+                data: { record: usuarios },
             };
 
-            // Realizar solicitud PUT
             const response = await axios(configPut);
+
             if (response.status === 200) {
-                return res.status(200).send('Usuario registrado con éxito');
+                res.status(200).send('Usuario registrado con éxito');
             } else {
-                return res.status(400).send("No se pudo registrar el usuario");
+                res.status(400).send("No se pudo registrar el usuario");
             }
         } catch (error) {
             console.error('Error al procesar el registro de usuario:', error);
-            return res.status(500).send('Error interno del servidor');
+            res.status(500).send('Error interno del servidor');
         }
     },
 
@@ -71,10 +62,10 @@ const userController = {
         const config = {
             method: "GET",
             maxBodyLength: Infinity,
-            url: 'https://api.jsonbin.io/v3/b/665798dbacd3cb34a84fb7ec',
+            url: process.env.JSONBIN_URL,
             headers: {
                 'Content-Type': 'application/json',
-                "X-Master-Key": "$2a$10$oLeM1xVUsAeQwpsBrvJeY.KONldUcqx6VGgyVDBmuPCOiui1qapAK"
+                "X-Master-Key": process.env.MASTER_KEY
             }
         };
 
@@ -82,23 +73,17 @@ const userController = {
             const result = await axios(config);
             const usuarios = result.data.record;
 
-            // Buscar usuario con las credenciales proporcionadas
             const usuario = usuarios.find(user => user.email === req.body.email && user.password === req.body.password);
             if (usuario) {
-                return res.status(200).send("Inicio de sesión exitoso");
+                res.status(200).send("Inicio de sesión exitoso");
             } else {
-                return res.status(400).send('Credenciales incorrectas');
+                res.status(400).send('Credenciales incorrectas');
             }
         } catch (error) {
             console.error('Error al iniciar sesión:', error);
-            return res.status(500).send('Error interno del servidor');
+            res.status(500).send('Error interno del servidor');
         }
     }
 };
 
-app.post('/guardar-usuario', userController.guardarUsuario);
-app.post('/iniciar-sesion', userController.iniciarSesion);
-
-app.listen(3001, () => {
-    console.log('Servidor ejecutándose en http://localhost:3001');
-});
+module.exports = userController;
