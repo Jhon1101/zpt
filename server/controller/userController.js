@@ -1,8 +1,10 @@
+const express = require('express');
+const cors = require('cors');
 const axios = require('axios');
-const express = require("express");
+
 const app = express();
-const cors = require("cors");
-app.use(cors())
+app.use(cors());
+app.use(express.json());
 
 const userController = {
     guardarUsuario: async function (req, res) {
@@ -94,4 +96,9 @@ const userController = {
     }
 };
 
-module.exports = userController;
+app.post('/guardar-usuario', userController.guardarUsuario);
+app.post('/iniciar-sesion', userController.iniciarSesion);
+
+app.listen(3001, () => {
+    console.log('Servidor ejecutándose en http://localhost:3001');
+});

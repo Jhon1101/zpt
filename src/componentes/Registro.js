@@ -33,10 +33,7 @@ const Registro = () => {
 
     const usuarioJSON = JSON.stringify(usuario);
 
-    // Reemplaza 'URL' con la URL real del servidor
-    const URL = 'http://localhost:3001';
-
-    fetch(`${URL}/guardar-usuario`, {
+    fetch('http://localhost:3001/guardar-usuario', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
