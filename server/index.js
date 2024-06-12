@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -5,7 +6,7 @@ const axios = require('axios');
 const userController = require('./controller/userController');
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -21,10 +22,10 @@ app.get("/", (req, res) => {
     const config = {
         method: "GET",
         maxBodyLength: Infinity,
-        url: 'https://api.jsonbin.io/v3/b/665798dbacd3cb34a84fb7ec',
+        url: process.env.JSONBIN_URL,
         headers: {
             'Content-Type': 'application/json',
-            "X-Master-Key": "$2a$10$oLeM1xVUsAeQwpsBrvJeY.KONldUcqx6VGgyVDBmuPCOiui1qapAK"
+            "X-Master-Key": process.env.MASTER_KEY
         }
     };
 
@@ -34,7 +35,7 @@ app.get("/", (req, res) => {
         })
         .catch(error => {
             console.error(error);
-            res.status(500).send('');
+            res.status(500).send('Error al obtener los datos');
         });
 });
 

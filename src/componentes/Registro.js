@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BsPersonFill, BsEnvelopeFill, BsLockFill } from 'react-icons/bs'; // Importar iconos de Bootstrap Icons
+import { BsPersonFill, BsEnvelopeFill, BsLockFill } from 'react-icons/bs';
 import '../App.css';
 
 const Registro = () => {
