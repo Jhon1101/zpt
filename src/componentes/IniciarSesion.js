@@ -17,7 +17,7 @@ const IniciarSesion = () => {
     const usuario = usuariosRegistradosData.find(user => user.email === email && user.password === password);
     if (usuario) {
       alert('Inicio de sesión exitoso');
-      login({ email: usuario.email, nombres: usuario.nombres }); 
+      login({ email: usuario.email, nombres: usuario.nombres }); // Pasar la información del usuario
       navigate('/');
     } else {
       alert('Credenciales incorrectas');
