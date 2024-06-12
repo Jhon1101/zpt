@@ -2,7 +2,6 @@ import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BsEnvelopeFill, BsLockFill } from 'react-icons/bs';
 import { DataContext } from "../context/Dataprovider";
-import usuariosRegistradosData from '../componentes/usuariosRegistrados.json';
 import '../App.css';
 
 const IniciarSesion = () => {
@@ -14,14 +13,28 @@ const IniciarSesion = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const usuario = usuariosRegistradosData.find(user => user.email === email && user.password === password);
-    if (usuario) {
-      alert('Inicio de sesión exitoso');
-      login({ email: usuario.email, nombres: usuario.nombres }); // Pasar la información del usuario
-      navigate('/');
-    } else {
-      alert('Credenciales incorrectas');
-    }
+    // Actualiza esta URL para que apunte a tu backend desplegado en Render
+    fetch('https://tu-backend-url.onrender.com/iniciar-sesion', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, password })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.error) {
+        alert('Credenciales incorrectas');
+      } else {
+        alert('Inicio de sesión exitoso');
+        login({ email: data.email, nombres: data.nombres });
+        navigate('/');
+      }
+    })
+    .catch(error => {
+      console.error('Error al iniciar sesión:', error);
+      alert('Error al iniciar sesión. Por favor, inténtalo de nuevo.');
+    });
   };
 
   return (
