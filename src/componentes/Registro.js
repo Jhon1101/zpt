@@ -33,8 +33,7 @@ const Registro = () => {
 
     const usuarioJSON = JSON.stringify(usuario);
 
-    // Actualiza esta URL para que apunte a tu backend desplegado en Render
-    fetch('https://tu-backend-url.onrender.com/guardar-usuario', {
+    fetch('http://localhost:3001/guardar-usuario', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

@@ -2,15 +2,13 @@ const express = require("express");
 const app = express();
 const axios = require('axios');
 const cors = require("cors");
-require('dotenv').config();
-
 app.use(cors());
 
 const apiConfig = {
-    url: process.env.API_URL,
+    url: 'https://api.jsonbin.io/v3/b/665798dbacd3cb34a84fb7ec',
     headers: {
         'Content-Type': 'application/json',
-        "X-Master-Key": process.env.API_KEY
+        "X-Master-Key": "$2a$10$oLeM1xVUsAeQwpsBrvJeY.KONldUcqx6VGgyVDBmuPCOiui1qapAK"
     }
 };
 
