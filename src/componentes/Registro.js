@@ -24,21 +24,18 @@ const Registro = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    // Verificar que las contraseñas coincidan
+
     if (usuario.password !== usuario.confirmarPassword) {
       alert('Las contraseñas no coinciden. Por favor, inténtalo de nuevo.');
       return;
     }
-
-    const usuarioJSON = JSON.stringify(usuario);
 
     fetch('http://localhost:3001/guardar-usuario', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: usuarioJSON
+      body: JSON.stringify(usuario)
     })
     .then(response => {
       if (response.ok) {

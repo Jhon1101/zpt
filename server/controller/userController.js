@@ -1,88 +1,45 @@
-const axios = require('axios');
+const connection = require('../configBD');
 
 const userController = {
-    guardarUsuario: async function (req, res) {
-        const config = {
-            method: "GET",
-            maxBodyLength: Infinity,
-            url: process.env.JSONBIN_URL,
-            headers: {
-                'Content-Type': 'application/json',
-                "X-Master-Key": process.env.MASTER_KEY
-            }
-        };
+    guardarUsuario: (req, res) => {
+        const { identificacion, nombres, apellidos, email, direccion, telefono, password } = req.body;
 
-        try {
-            const result = await axios(config);
-            let usuarios = result.data.record;
-            const nuevoUsuario = {
-                id: usuarios.length + 1,
-                identificacion: req.body.identificacion,
-                nombres: req.body.nombres,
-                apellidos: req.body.apellidos,
-                email: req.body.email,
-                direccion: req.body.direccion,
-                telefono: req.body.telefono,
-                password: req.body.password
-            };
-
-            const existeUsuario = usuarios.some(user => user.email === req.body.email);
-
-            if (existeUsuario) {
-                res.status(400).send("Usuario ya existe en la Base de Datos");
-                return;
-            }
-
-            usuarios.push(nuevoUsuario);
-
-            const configPut = {
-                method: "PUT",
-                url: process.env.JSONBIN_URL,
-                headers: {
-                    'Content-Type': 'application/json',
-                    "X-Master-Key": process.env.MASTER_KEY
-                },
-                data: { record: usuarios },
-            };
-
-            const response = await axios(configPut);
-
-            if (response.status === 200) {
-                res.status(200).send('Usuario registrado con éxito');
+        const query = `INSERT INTO datos (identificacion, nombres, apellidos, email, direccion, telefono, password) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+        connection.query(query, [identificacion, nombres, apellidos, email, direccion, telefono, password], (error, results) => {
+            if (error) {
+                console.error('Error al guardar el usuario:', error);
+                res.status(500).send('Error al guardar el usuario');
             } else {
-                res.status(400).send("No se pudo registrar el usuario");
+                res.status(200).send('Usuario registrado con éxito');
             }
-        } catch (error) {
-            console.error('Error al procesar el registro de usuario:', error);
-            res.status(500).send('Error interno del servidor');
-        }
+        });
     },
 
-    iniciarSesion: async function (req, res) {
-        const config = {
-            method: "GET",
-            maxBodyLength: Infinity,
-            url: process.env.JSONBIN_URL,
-            headers: {
-                'Content-Type': 'application/json',
-                "X-Master-Key": process.env.MASTER_KEY
+    obtenerUsuarios: (req, res) => {
+        const query = 'SELECT * FROM datos';
+        connection.query(query, (error, results) => {
+            if (error) {
+                console.error('Error al obtener los usuarios:', error);
+                res.status(500).send('Error al obtener los usuarios');
+            } else {
+                res.status(200).json(results);
             }
-        };
+        });
+    },
 
-        try {
-            const result = await axios(config);
-            const usuarios = result.data.record;
-
-            const usuario = usuarios.find(user => user.email === req.body.email && user.password === req.body.password);
-            if (usuario) {
-                res.status(200).send("Inicio de sesión exitoso");
+    iniciarSesion: (req, res) => {
+        const { email, password } = req.body;
+        const query = `SELECT * FROM datos WHERE email = ? AND password = ?`;
+        connection.query(query, [email, password], (error, results) => {
+            if (error) {
+                console.error('Error al iniciar sesión:', error);
+                res.status(500).send('Error al iniciar sesión');
+            } else if (results.length > 0) {
+                res.status(200).send('Inicio de sesión exitoso');
             } else {
                 res.status(400).send('Credenciales incorrectas');
             }
-        } catch (error) {
-            console.error('Error al iniciar sesión:', error);
-            res.status(500).send('Error interno del servidor');
-        }
+        });
     }
 };
 
