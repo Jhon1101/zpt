@@ -4,13 +4,15 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const userController = require('./controller/userController');
 
-// Inicializa la aplicación de Express
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
+
+// Solicita la conexión a la BD
+const connection = require('./configBD.js');
 
 // Ruta para obtener todos los usuarios
 app.get("/todos-los-usuarios", (req, res) => {
