@@ -1,7 +1,7 @@
 const mysql = require('mysql2');
 const connection = mysql.createConnection({
     host: "sql10.freesqldatabase.com",
-    user: "ssql10716367",
+    user: "sql10716367",
     password: "GWKrpsXEqR",
     database: "sql10716367",
     port: 3306,
@@ -14,3 +14,5 @@ connection.connect((error) => {
         console.log("Conexión fallida", error);
     }
 });
+
+module.exports = connection;
